@@ -26,7 +26,7 @@ class MainWindow(QWidget):
 
         self.buttonApiTgKey = QPushButton("Сохранить", self)
         self.buttonApiTgKey.setFixedSize(100, 30)
-        # button.clicked.connect() #Сюда поместить функцию
+        self.buttonApiTgKey.clicked.connect(self.save_api_tg_key) #Сюда поместить функцию
 
         self.inputApiVkKey = QTextEdit(self)
         self.inputApiVkKey.setFixedSize(300, 30)
@@ -34,7 +34,7 @@ class MainWindow(QWidget):
 
         self.buttonApiVkKey = QPushButton("Сохранить", self)
         self.buttonApiVkKey.setFixedSize(100, 30)
-        # button.clicked.connect() #Сюда поместить функцию
+        self.buttonApiVkKey.clicked.connect(self.save_api_vk_key) #Сюда поместить функцию
 
         self.inputId = QTextEdit(self)
         self.inputId.setFixedSize(300, 30)
@@ -42,7 +42,7 @@ class MainWindow(QWidget):
 
         self.buttonId = QPushButton("Сохранить", self)
         self.buttonId.setFixedSize(100, 30)
-        self.buttonId.clicked.connect() #Сюда поместить функцию
+        self.buttonId.clicked.connect(self.save_id_vk) #Сюда поместить функцию
 
         self.inputURL = QTextEdit(self)
         self.inputURL.setFixedSize(300, 30)
@@ -50,29 +50,41 @@ class MainWindow(QWidget):
 
         self.buttonURL = QPushButton("Сохранить", self)
         self.buttonURL.setFixedSize(100, 30)
-        # button.clicked.connect() #Сюда поместить функцию
+        self.buttonURL.clicked.connect(self.save_url) #Сюда поместить функцию
 
 
         self.startPost = QPushButton("Запустить автопостинг", self)
         self.startPost.setFixedSize(200, 30)
+        self.startPost.clicked.connect(self.save_id_vk)
 
         self.stopPost = QPushButton("Остановить автопостинг", self)
         self.stopPost.setFixedSize(200, 30)
+        self.stopPost.clicked.connect(self.save_id_vk)
 
         self.radio_button = QRadioButton('Автозапуск приложения\nпри включении Windows')
         self.radio_button.setChecked(True)
+        self.radio_button.clicked.connect(self.save_id_vk)
 
         self.ClearURL = QPushButton("Очистить базу данных URL", self)
         self.ClearURL.setFixedSize(200, 30)
+        self.ClearURL.clicked.connect(self.save_id_vk)
         # button.clicked.connect() #Сюда поместить функцию
         
         self.ClearSetings = QPushButton("Сброс настроек", self)
         self.ClearSetings.setFixedSize(200, 30)
+        self.ClearSetings.clicked.connect(self.save_id_vk)
         # button.clicked.connect() #Сюда поместить функцию
 
-        label_one = QLabel('Данный парсер разработан с целью автопостинга из Яндекс Дзена в соцсет')
+        label_one = QLabel('Данный парсер разработан с целью\nавтопостинга из Яндекс Дзена в соцсети')
+        label_one.setFixedSize(300, 40)
         label_two = QLabel('Возможности:\n1. Автопостинг в телеграм\n2. Автопостинг в ВК')
-        label_one.setFixedSize(200, 30)
+        label_two.setFixedSize(300, 80)
+        label_three = QLabel('Как работает?\nПриложение считывает указанные вами\nключи и начинает сканирование блога в\nЯндекс Дзен.')
+        label_three.setFixedSize(300, 80)
+        label_four = QLabel('После сканирования он заносит\nвсе статьи в базу данных чтобы\nпредотвратить повторный постинг.')
+        label_four.setFixedSize(300, 80)
+        label_five = QLabel('Все что вам нужно сделать - это\nввести ключи и нажать кнопку\n“Запустить автопостинг”')
+        label_five.setFixedSize(300, 80)
         grid = QGridLayout()
         
         # grid.setHorizontalSpacing(100)
@@ -86,42 +98,67 @@ class MainWindow(QWidget):
         grid.setRowStretch(5, 30)
         grid.setRowStretch(6, 30)
         grid.setRowStretch(7, 30)
-
-        # grid.setRowStretch(1, 10)
-        # grid.setRowStretch(2, 10)
-        # grid.setRowStretch(3, 10)
+        grid.setRowStretch(8, 30)
+        grid.setRowStretch(9, 30)
+        grid.setRowStretch(10, 30)
+        grid.setRowStretch(11, 30)
+        grid.setRowStretch(12, 30)
+        grid.setRowStretch(13, 30)
 
 
         #ПРАВЫЙ СТОЛБЕЦ
-        grid.addWidget(self.buttonApiTgKey, 1, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.buttonApiVkKey, 3, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.buttonId, 5, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.buttonURL, 7, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.buttonApiTgKey, 1, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.buttonApiVkKey, 3, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.buttonId, 5, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.buttonURL, 7, 1, alignment=Qt.AlignmentFlag.AlignRight)
         
-        grid.addWidget(self.startPost, 9, 1, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.stopPost, 10, 1, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.radio_button, 11, 1, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.ClearURL, 12, 1, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.ClearSetings, 13, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.startPost, 9, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        grid.addWidget(self.stopPost, 10, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        grid.addWidget(self.radio_button, 11, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        grid.addWidget(self.ClearURL, 12, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        grid.addWidget(self.ClearSetings, 13, 1, alignment=Qt.AlignmentFlag.AlignCenter)
         
         #grid.addWidget(self.inputApiTgKey, 0, 0, alignment=Qt.AlignmentFlag.AlignCenter)
-        grid.addWidget(self.inputApiTgKey, 0, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.inputApiVkKey, 2, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.inputId, 4, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(self.inputURL, 6, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.inputApiTgKey, 0, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.inputApiVkKey, 2, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.inputId, 4, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        grid.addWidget(self.inputURL, 6, 1, alignment=Qt.AlignmentFlag.AlignRight)
         # grid.addWidget(8, 1, alignment=Qt.AlignmentFlag.AlignRight)
 
 
         #Левый столбец
         # label_one
-        grid.addWidget(label_one, 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
-        grid.addWidget(label_two, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
-
+        # grid.addWidget(label_one, 0, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        # grid.addWidget(label_two, 1, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        # grid.addWidget(label_three, 3, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        # grid.addWidget(label_four, 5, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        # grid.addWidget(label_five, 7, 0, alignment=Qt.AlignmentFlag.AlignLeft)
         self.setLayout(grid)
         self.setStyleSheet("#MainWindow{background-image:url(background.png)}")
 
         # self.setGeometry(300, 300, 350, 300)
         self.show()
+
+    api_tg_key = ""
+    api_vk_key = ""
+    id_vk = ""
+
+
+    def save_api_tg_key(self):
+        self.api_tg_key = self.inputApiTgKey.toPlainText()
+        print(self.api_tg_key)
+
+    def save_api_vk_key(self):
+        self.api_vk_key = self.inputApiVkKey.toPlainText()
+        print(self.api_vk_key)
+
+    def save_id_vk(self):
+        self.api_vk_key = self.inputId.toPlainText()
+        print(self.api_vk_key)
+
+    def save_url(self):
+        self.api_vk_key = self.inputURL.toPlainText()
+        print(self.api_vk_key)
 
 def ui_interfase():
 
@@ -140,7 +177,13 @@ def ui_interfase():
         border-radius: 30px;
         color: white;
     }
-
+    QLabel {
+        font-size: 13px;
+        padding-left: 8px;
+        background-color: gray;
+        color: white;
+        border-radius: 30px;
+    }
     QPushButton:hover {
         font-size: 16px;
         background-color: black;
@@ -162,7 +205,7 @@ def ui_interfase():
     window.setStyleSheet("#MainWindow{border-image:url(background.png)}")
     window.setWindowTitle('DzenParserApp')
     window.setWindowIcon(QIcon('icon.png'))
-    window.resize(640, 640)
+    window.resize(300, 640)
 
     window.show()
 
