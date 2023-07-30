@@ -1,3 +1,16 @@
+import aiohttp
+import asyncio
+from aiogram import Bot, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
+
+from pyppeteer import launch
+
+import vk_api
+
+import requests
+import random
+import time
 
 import sys
 from PyQt6.QtWidgets import *
@@ -5,6 +18,11 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 
 import sys
+
+LISTEN_URL = 'https://dzen.ru/da_artemov?tab=articles'
+TOKEN = '6314588415:AAGYMNfc_Q6IJfeVS2G0XpPQuvGDT-5B17k'
+ACCESS_TOKEN = 'vk1.a.u4qARQbioCvQbJXrNlkjwE1sRVLelvnnKW646vsIQ7HKB6UCJcOqLdjBo20P7O6CnmpX0U0LOrpH45cc17_84mntwPEkxEoOLKsIUEwad-0FlcF4Kbxl1pS18jp16mLAggVaMpmzohb1733HMz2u7iPx9yBA2eyAFPNZl1HLmN6PrzwsR5UC0qcN6XUEssilR-O0jtDI_kYk2dQsQDYL1A'
+GROUP_ID = '221189347'
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -142,23 +160,32 @@ class MainWindow(QWidget):
     api_tg_key = ""
     api_vk_key = ""
     id_vk = ""
+    url = ""
 
 
     def save_api_tg_key(self):
+        global TOKEN
         self.api_tg_key = self.inputApiTgKey.toPlainText()
+        TOKEN = self.api_tg_key
         print(self.api_tg_key)
 
     def save_api_vk_key(self):
+        global ACCESS_TOKEN
         self.api_vk_key = self.inputApiVkKey.toPlainText()
+        ACCESS_TOKEN = self.api_vk_key
         print(self.api_vk_key)
 
     def save_id_vk(self):
+        global GROUP_ID
         self.api_vk_key = self.inputId.toPlainText()
+        GROUP_ID = self.api_vk_key
         print(self.api_vk_key)
 
     def save_url(self):
-        self.api_vk_key = self.inputURL.toPlainText()
-        print(self.api_vk_key)
+        global LISTEN_URL
+        self.url = self.inputURL.toPlainText()
+        LISTEN_URL = self.url
+        print(self.url, LISTEN_URL)
 
 def ui_interfase():
 
