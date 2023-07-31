@@ -8,6 +8,8 @@ from pyppeteer import launch
 
 import vk_api
 
+import os
+
 import requests
 import random
 import time
@@ -80,8 +82,8 @@ class MainWindow(QWidget):
         self.stopPost.clicked.connect(self.save_id_vk)
 
         self.radio_button = QRadioButton('Автозапуск приложения\nпри включении Windows')
-        self.radio_button.setChecked(True)
-        self.radio_button.clicked.connect(self.save_id_vk)
+        # self.radio_button.setChecked(True)
+        self.radio_button.clicked.connect(self.run_app_radio_button)
 
         self.ClearURL = QPushButton("Очистить базу данных URL", self)
         self.ClearURL.setFixedSize(200, 30)
@@ -186,6 +188,21 @@ class MainWindow(QWidget):
         self.url = self.inputURL.toPlainText()
         LISTEN_URL = self.url
         print(self.url, LISTEN_URL)
+
+    def run_app_radio_button(self):
+        global LISTEN_URL
+        if self.radio_button.isChecked():            
+            file_path = sys.argv[0]
+            file_name = file_path.split('\\')[-1]
+            path = '%userprofile%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\'
+            os.system(f'copy "{file_path}" "{path}{file_name}"')
+            print("Файл добавлен в автозапуск")
+        else:
+            file_path = sys.argv[0]
+            file_name = file_path.split('\\')[-1]
+            path = '%userprofile%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\'
+            os.system(f'del {path+file_name}')
+            print("Файл удален из автозапуск")
 
 def ui_interfase():
 
