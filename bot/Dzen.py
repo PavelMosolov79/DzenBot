@@ -10,19 +10,34 @@ import requests
 import random
 import time
 
-LISTEN_URL = 'https://dzen.ru/da_artemov?tab=articles'
+import os
+
+LISTEN_URL = ''
 TOKEN = '6314588415:AAGYMNfc_Q6IJfeVS2G0XpPQuvGDT-5B17k'
-ACCESS_TOKEN = 'vk1.a.u4qARQbioCvQbJXrNlkjwE1sRVLelvnnKW646vsIQ7HKB6UCJcOqLdjBo20P7O6CnmpX0U0LOrpH45cc17_84mntwPEkxEoOLKsIUEwad-0FlcF4Kbxl1pS18jp16mLAggVaMpmzohb1733HMz2u7iPx9yBA2eyAFPNZl1HLmN6PrzwsR5UC0qcN6XUEssilR-O0jtDI_kYk2dQsQDYL1A'
-GROUP_ID = '221189347'
-print(LISTEN_URL)
-# START = False
+ACCESS_TOKEN = ''
+GROUP_ID = ''
+
+def load_config(file_path):
+    config = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            # Разделяем строку на ключ и значение, используя знак равенства как разделитель
+            key, value = line.strip().split(' = ')
+            # Избавляемся от кавычек в значении, если они есть
+            value = value.strip("'")
+            config[key] = value
+    return config
+
 
 stop_event = asyncio.Event()
-stop_event.clear()
-# stop_event.set()
+# stop_event.clear()
+stop_event.set()
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+
+
+
 
 import vk_api
 
@@ -196,7 +211,6 @@ async def get_href(url):
 
     article_links = remove_duplicates_from_list(article_links)
 
-    # print(article_links)
     await browser.close()
     return article_links
   except Exception as e:
@@ -255,90 +269,7 @@ async def process_url(user_url):
     return None, None, None
 
 
-@dp.message_handler(commands=['start'])
-async def handle_start(message: types.Message):
-  global LISTEN_URL
-  # Создаем клавиатуру с двумя кнопками
-  keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-  keyboard.add(types.KeyboardButton("/start"))
-  # keyboard.add(types.KeyboardButton("/startListen"))
-  keyboard.add(types.KeyboardButton("/stopListen"))
-  keyboard.add(types.KeyboardButton("/ChekAPI"))
-  # keyboard.add(types.KeyboardButton("/newArticle"))
-  keyboard.add(types.KeyboardButton("/newDzenUrl"))
-  keyboard.add(types.KeyboardButton("/newVkApiKey"))
-  keyboard.add(types.KeyboardButton("/newVkGroupKey"))
-  keyboard.add(types.KeyboardButton("Начать прослушивание"))
-  keyboard.add(types.KeyboardButton("/help"))
-  # keyboard.add(types.KeyboardButton("/exit"))
-
-  await message.reply("Привет! Выберите кнопку:", reply_markup=keyboard)
-
-
-@dp.message_handler(commands=['help'])
-async def handle_start(message: types.Message):
-  await message.reply("/start - начало работы с ботом")
-  await message.reply("/ChekAPI - проверить установленные ключи доступа")
-  await message.reply("/newDzenUrl - установить новый url Блога")
-  await message.reply("/newVkApiKey - ввести новый VK API ключ")
-  await message.reply("/newVkGroupKey - ввести новый VK id группы")
-  await message.reply(
-    "Начать прослушивание - запуск парсинга яндекс дзена (проверка на новые статьи осуществляется каждые 3 секунды!"
-  )
-  await message.reply("/start")
-  await message.reply("/start")
-  await message.reply("/start")
-
-
-@dp.message_handler(commands=['newArticle'])
-async def handle_start(message: types.Message):
-  await message.reply("Привет! Введите URL сайта:")
-
-
-@dp.message_handler(commands=['newVkApiKey'])
-async def handle_start(message: types.Message):
-  await message.reply("Введите новый VK API ключ:")
-
-
-@dp.message_handler(commands=['newVkGroupKey'])
-async def handle_start(message: types.Message):
-  await message.reply("Введите новый VK id группы:")
-
-
-@dp.message_handler(commands=['newDzenUrl'])
-async def handle_start(message: types.Message):
-  await message.reply("Введите новый адресс блога:")
-
-
-@dp.message_handler(commands=['ChekAPI'])
-async def handle_start(message: types.Message):
-  await message.reply(f"VK API: {ACCESS_TOKEN}\nVK GROUP ID: {GROUP_ID}")
-
-
-# @dp.message_handler(commands=['exit'])
-# async def handle_start(message: types.Message):
-# await exit()
-
-
-@dp.message_handler(commands=['startListen'])
-async def cmd_start(message: types.Message):
-  global stop_event
-  stop_event.clear()
-  await message.reply(
-    "Начать прослушивание статьи каждые 5 минут, чтобы завершить введите /stop"
-  )
-
-
-@dp.message_handler(commands=['stopListen'])
-async def cmd_stop(message: types.Message):
-  global stop_event
-  stop_event.set()
-  await message.reply("Прослушивание приостановлено!")
-
-
 async def periodic_job(listenUrl, message):
-  # global LISTEN_URL
-  # listenUrl = LISTEN_URL
   print("sss", listenUrl, "\n")
   while True:
     await asyncio.sleep(3)  # Пауза в 5 минут (300 секунд)
@@ -382,9 +313,63 @@ async def periodic_job(listenUrl, message):
     else:
       print("Новых ссылок нет")
 
-    if stop_event.is_set(
-    ):  # Проверяем, что событие установлено (прослушивание приостановлено)
+    if stop_event.is_set():  # Проверяем, что событие установлено (прослушивание приостановлено)
       break
+
+
+
+@dp.message_handler(commands=['start'])
+async def handle_start(message: types.Message):
+  global LISTEN_URL
+  # Создаем клавиатуру с двумя кнопками
+  keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+  keyboard.add(types.KeyboardButton("/start"))
+  keyboard.add(types.KeyboardButton("/ChekAPI"))
+  # keyboard.add(types.KeyboardButton("/newDzenUrl"))
+  # keyboard.add(types.KeyboardButton("/newVkApiKey"))
+  # keyboard.add(types.KeyboardButton("/newVkGroupKey"))
+  keyboard.add(types.KeyboardButton("/Начать прослушивание"))
+  keyboard.add(types.KeyboardButton("/Остановить прослушивание"))
+  # keyboard.add(types.KeyboardButton("/Автозапуск бота при включении Windows"))
+  keyboard.add(types.KeyboardButton("/help"))
+  keyboard.add(types.KeyboardButton("/Очистить базу данных URl"))
+
+
+  await message.reply("Привет! Выберите кнопку:", reply_markup=keyboard)
+
+# /newDzenUrl - установить новый url Блога\n
+# /newVkApiKey - ввести новый VK API ключ\n
+# /newVkGroupKey - ввести новый VK id группы\n
+
+@dp.message_handler(commands=['help'])
+async def handle_start(message: types.Message):
+  await message.reply(""" 
+  /start - начало работы с ботом\n
+/ChekAPI - проверить установленные ключи доступа\n
+Начать прослушивание - запуск парсинга яндекс дзена (проверка на новые статьи осуществляется каждые 3 секунды!\n
+Остановить прослушивание - запуск парсинга яндекс дзена (проверка на новые статьи осуществляется каждые 3 секунды!\n
+Автозапуск бота при включении Windows - добавляет приложение в автозапуск\n
+Очистить базу данных URl - Удалаяет записи всех статей из базы данных, которые были найдены в блоге, после очистки при нажатии на "Начать прослушивание" бот снова выложит все статьи. СОХРАНИТЕ КОПИЮ ФАЙЛА ПЕРЕД УДАЛЕНИЕМ В ДРУГОЕ МЕСТО. ОСТОРОЖНО! ДАННОЕ ДЕСТВИЕ НЕЛЬЗЯ ОБРАТИТЬ!""")
+
+
+@dp.message_handler(commands=['newVkApiKey'])
+async def handle_start(message: types.Message):
+  await message.reply("Введите новый VK API ключ:")
+
+
+@dp.message_handler(commands=['newVkGroupKey'])
+async def handle_start(message: types.Message):
+  await message.reply("Введите новый VK id группы:")
+
+
+@dp.message_handler(commands=['newDzenUrl'])
+async def handle_start(message: types.Message):
+  await message.reply("Введите новый адресс блога:")
+
+
+@dp.message_handler(commands=['ChekAPI'])
+async def handle_start(message: types.Message):
+  await message.reply(f"VK API: {ACCESS_TOKEN}\nVK GROUP ID: {GROUP_ID}")
 
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT)
@@ -406,7 +391,6 @@ async def handle_message(message: types.Message):
     elif GROUP_ID == "":
       await message.reply(
         "id группы VK отсутствует.\n\nКомманда для ввода id - /newVkGroupKey")
-
     else:
       LISTEN_URL = user_url
       # print("url получен")
@@ -423,8 +407,33 @@ async def handle_message(message: types.Message):
 
       # vk_posting(allText + saveText, image_url)
   elif 'Начать прослушивание' in user_url:
+    config = {}
+
+    # file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
+    file_path = 'config.txt'
+    config = load_config(file_path)
+
+    LISTEN_URL = config['LISTEN_URL']
+    ACCESS_TOKEN = config['ACCESS_TOKEN']
+    GROUP_ID = config['GROUP_ID']
+    
+    stop_event.clear()
     loop = asyncio.get_event_loop()
     loop.create_task(periodic_job(LISTEN_URL, message))
+  elif 'Остановить прослушивание' in user_url:
+    stop_event.set()
+    await message.reply("Прослушивание приостановлено!")
+  elif 'Очистить базу данных URl' in user_url:
+    file_path = 'bd.txt'
+    with open(file_path, 'w') as file:
+      pass
+    await message.reply("База URL адресов очищена")
+  # elif 'Автозапуск бота при включении Windows' in user_url:
+  #   file_path = sys.argv[0]
+  #   file_name = file_path.split('\\')[-1]
+  #   path = '%userprofile%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\'
+  #   os.system(f'copy "{file_path}" "{path}{file_name}"')
+  #   await message.reply("Файл добавлен в автозапуск")
   elif 'vk' in user_url:
     ACCESS_TOKEN = user_url
     await message.reply(f"{ACCESS_TOKEN}")
@@ -433,13 +442,6 @@ async def handle_message(message: types.Message):
     await message.reply(f"{GROUP_ID}")
   else:
     await message.reply("Прости, я не понял, введи /start")
-
-
-def start_scraping_time():
-  start = True
-  while (start):
-
-    time.sleep(3)
 
 
 if __name__ == '__main__':
