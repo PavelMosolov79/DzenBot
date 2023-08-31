@@ -13,7 +13,7 @@ import time
 import os
 
 LISTEN_URL = ''
-TOKEN = '6314588415:AAGYMNfc_Q6IJfeVS2G0XpPQuvGDT-5B17k'
+TOKEN = ''
 ACCESS_TOKEN = ''
 GROUP_ID = ''
 
@@ -29,8 +29,19 @@ def load_config(file_path):
     return config
 
 
+
+config = {}
+
+file_path = 'config.txt'
+config = load_config(file_path)
+
+LISTEN_URL = config['LISTEN_URL']
+TOKEN = config['TOKEN']
+ACCESS_TOKEN = config['ACCESS_TOKEN']
+GROUP_ID = config['GROUP_ID']
+
+
 stop_event = asyncio.Event()
-# stop_event.clear()
 stop_event.set()
 
 bot = Bot(token=TOKEN)
@@ -272,7 +283,7 @@ async def process_url(user_url):
 async def periodic_job(listenUrl, message):
   print("sss", listenUrl, "\n")
   while True:
-    await asyncio.sleep(3)  # Пауза в 5 минут (300 секунд)
+    await asyncio.sleep(30)  # Пауза в (30 секунд)
     urls = await href_process_url(listenUrl)
 
     if urls:
@@ -325,21 +336,13 @@ async def handle_start(message: types.Message):
   keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
   keyboard.add(types.KeyboardButton("/start"))
   keyboard.add(types.KeyboardButton("/ChekAPI"))
-  # keyboard.add(types.KeyboardButton("/newDzenUrl"))
-  # keyboard.add(types.KeyboardButton("/newVkApiKey"))
-  # keyboard.add(types.KeyboardButton("/newVkGroupKey"))
   keyboard.add(types.KeyboardButton("/Начать прослушивание"))
   keyboard.add(types.KeyboardButton("/Остановить прослушивание"))
-  # keyboard.add(types.KeyboardButton("/Автозапуск бота при включении Windows"))
   keyboard.add(types.KeyboardButton("/help"))
   keyboard.add(types.KeyboardButton("/Очистить базу данных URl"))
 
 
   await message.reply("Привет! Выберите кнопку:", reply_markup=keyboard)
-
-# /newDzenUrl - установить новый url Блога\n
-# /newVkApiKey - ввести новый VK API ключ\n
-# /newVkGroupKey - ввести новый VK id группы\n
 
 @dp.message_handler(commands=['help'])
 async def handle_start(message: types.Message):
@@ -393,30 +396,7 @@ async def handle_message(message: types.Message):
         "id группы VK отсутствует.\n\nКомманда для ввода id - /newVkGroupKey")
     else:
       LISTEN_URL = user_url
-      # print("url получен")
-      # allText, saveText, image_url = await process_url(user_url)
-      # print("контент получен")
-
-      # await message.reply(f"{allText}")
-      # await message.reply(f"{saveText}")
-
-      # if image_url:
-      #   await message.reply_photo(image_url)
-      # else:
-      #   await message.reply("На странице нет изображений.")
-
-      # vk_posting(allText + saveText, image_url)
   elif 'Начать прослушивание' in user_url:
-    config = {}
-
-    # file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
-    file_path = 'config.txt'
-    config = load_config(file_path)
-
-    LISTEN_URL = config['LISTEN_URL']
-    ACCESS_TOKEN = config['ACCESS_TOKEN']
-    GROUP_ID = config['GROUP_ID']
-    
     stop_event.clear()
     loop = asyncio.get_event_loop()
     loop.create_task(periodic_job(LISTEN_URL, message))
@@ -428,12 +408,6 @@ async def handle_message(message: types.Message):
     with open(file_path, 'w') as file:
       pass
     await message.reply("База URL адресов очищена")
-  # elif 'Автозапуск бота при включении Windows' in user_url:
-  #   file_path = sys.argv[0]
-  #   file_name = file_path.split('\\')[-1]
-  #   path = '%userprofile%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\'
-  #   os.system(f'copy "{file_path}" "{path}{file_name}"')
-  #   await message.reply("Файл добавлен в автозапуск")
   elif 'vk' in user_url:
     ACCESS_TOKEN = user_url
     await message.reply(f"{ACCESS_TOKEN}")
